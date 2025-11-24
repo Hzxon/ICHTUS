@@ -1,0 +1,283 @@
+Penjelasan baris per baris proyek pygame: Hindari Mobil (Car Dodger)
+Bahasa mudah untuk murid SD
+
+001. import pygame
+     ➜ Ambil library pygame supaya bisa bikin game.
+002. import random
+     ➜ Ambil library random supaya bisa bikin posisi musuh acak.
+003. 
+     ➜ Baris ini bagian dari program.
+004. # Inisialisasi pygame
+     ➜ Baris ini bagian dari program.
+005. pygame.init()
+     ➜ Nyalakan pygame dulu sebelum dipakai.
+006. 
+     ➜ Baris ini bagian dari program.
+007. # Ukuran layar
+     ➜ Baris ini bagian dari program.
+008. LEBAR = 500
+     ➜ Lebar jendela game 500 piksel.
+009. TINGGI = 600
+     ➜ Tinggi jendela game 600 piksel.
+010. 
+     ➜ Baris ini bagian dari program.
+011. # Warna (R, G, B)
+     ➜ Baris ini bagian dari program.
+012. PUTIH = (255, 255, 255)
+     ➜ Simpan warna putih.
+013. HITAM = (0, 0, 0)
+     ➜ Simpan warna hitam.
+014. MERAH = (200, 50, 50)
+     ➜ Simpan warna merah (dipakai musuh).
+015. BIRU = (50, 100, 200)
+     ➜ Simpan warna biru (dipakai pemain).
+016. ABU = (160, 160, 160)
+     ➜ Simpan warna abu-abu (dipakai jalan).
+017. 
+     ➜ Baris ini bagian dari program.
+018. # Membuat layar
+     ➜ Baris ini bagian dari program.
+019. layar = pygame.display.set_mode((LEBAR, TINGGI))
+     ➜ Buat jendela game dengan ukuran yang tadi.
+020. pygame.display.set_caption("Hindari Mobil")
+     ➜ Kasih judul game: Hindari Mobil.
+021. 
+     ➜ Baris ini bagian dari program.
+022. # Clock untuk atur FPS
+     ➜ Baris ini bagian dari program.
+023. clock = pygame.time.Clock()
+     ➜ Buat jam supaya game jalannya pelan dan pas.
+024. FPS = 60
+     ➜ Game digambar ulang 60 kali per detik.
+025. 
+     ➜ Baris ini bagian dari program.
+026. # Data pemain (mobil kita)
+     ➜ Baris ini bagian dari program.
+027. lebar_mobil = 40
+     ➜ Lebar mobil pemain 40 piksel.
+028. tinggi_mobil = 70
+     ➜ Tinggi mobil pemain 70 piksel.
+029. pemain_x = LEBAR // 2 - lebar_mobil // 2
+     ➜ Posisi X pemain di tengah.
+030. pemain_y = TINGGI - tinggi_mobil - 20
+     ➜ Posisi Y pemain di bawah.
+031. kecepatan_pemain = 5
+     ➜ Seberapa cepat mobil pemain bergerak.
+032. 
+     ➜ Baris ini bagian dari program.
+033. # List mobil musuh
+     ➜ Baris ini bagian dari program.
+034. musuh_list = []
+     ➜ Tempat untuk menyimpan mobil musuh.
+035. jarak_muncul = 40  # semakin kecil semakin sering muncul
+     ➜ Tentukan berapa sering musuh muncul.
+036. timer_muncul = 0
+     ➜ Penghitung waktu untuk munculkan musuh.
+037. 
+     ➜ Baris ini bagian dari program.
+038. # Skor (lama bertahan)
+     ➜ Baris ini bagian dari program.
+039. skor = 0
+     ➜ Skor awal 0.
+040. font = pygame.font.SysFont(None, 28)
+     ➜ Siapkan huruf untuk nulis skor.
+041. 
+     ➜ Baris ini bagian dari program.
+042. # Status game
+     ➜ Baris ini bagian dari program.
+043. game_over = False
+     ➜ Awalnya game belum game over.
+044. 
+     ➜ Baris ini bagian dari program.
+045. def buat_musuh():
+     ➜ Ini fungsi untuk membuat 1 mobil musuh.
+046.     """Buat 1 mobil musuh di posisi acak di atas."""
+     ➜ Baris ini bagian dari program.
+047.     x = random.randint(40, LEBAR - 40 - lebar_mobil)
+     ➜ Pilih posisi X musuh secara acak di dalam jalan.
+048.     y = -tinggi_mobil
+     ➜ Mulai dari atas layar (belum kelihatan).
+049.     kecepatan = random.randint(3, 7)
+     ➜ Baris ini bagian dari program.
+050.     rect_musuh = pygame.Rect(x, y, lebar_mobil, tinggi_mobil)
+     ➜ Buat kotak musuh dengan posisi dan ukuran.
+051.     return {"rect": rect_musuh, "speed": kecepatan}
+     ➜ Kembalikan data musuh (kotak dan kecepatannya).
+052. 
+     ➜ Baris ini bagian dari program.
+053. def reset_game():
+     ➜ Fungsi untuk mengulang game kalau tabrakan.
+054.     """Kembalikan nilai awal saat game over dan tekan R."""
+     ➜ Baris ini bagian dari program.
+055.     global musuh_list, skor, pemain_x, pemain_y, game_over
+     ➜ Kita bilang mau ubah variabel di luar fungsi.
+056.     musuh_list = []
+     ➜ Tempat untuk menyimpan mobil musuh.
+057.     skor = 0
+     ➜ Skor awal 0.
+058.     pemain_x = LEBAR // 2 - lebar_mobil // 2
+     ➜ Posisi X pemain di tengah.
+059.     pemain_y = TINGGI - tinggi_mobil - 20
+     ➜ Posisi Y pemain di bawah.
+060.     game_over = False
+     ➜ Awalnya game belum game over.
+061. 
+     ➜ Baris ini bagian dari program.
+062. # Loop utama game
+     ➜ Baris ini bagian dari program.
+063. running = True
+     ➜ Selama True, game akan jalan terus.
+064. while running:
+     ➜ Perulangan utama game.
+065.     clock.tick(FPS)
+     ➜ Atur kecepatan game sesuai FPS.
+066. 
+     ➜ Baris ini bagian dari program.
+067.     # 1. Tangkap event (tutup jendela dsb.)
+     ➜ Baris ini bagian dari program.
+068.     for event in pygame.event.get():
+     ➜ Cek semua event (misal tombol X di jendela).
+069.         if event.type == pygame.QUIT:
+     ➜ Kalau jendela ditutup, hentikan game.
+070.             running = False
+     ➜ Baris ini bagian dari program.
+071. 
+     ➜ Baris ini bagian dari program.
+072.     # Tekan tombol saat game over
+     ➜ Baris ini bagian dari program.
+073.     keys = pygame.key.get_pressed()
+     ➜ Cek tombol apa yang ditekan.
+074.     if game_over:
+     ➜ Kalau game over, cek apakah pemain mau restart.
+075.         if keys[pygame.K_r]:
+     ➜ Kalau tombol R ditekan, reset game.
+076.             reset_game()
+     ➜ Baris ini bagian dari program.
+077. 
+     ➜ Baris ini bagian dari program.
+078.     if not game_over:
+     ➜ Kalau belum game over, jalankan logika gerak dan musuh.
+079.         # 2. Gerakkan pemain
+     ➜ Baris ini bagian dari program.
+080.         if keys[pygame.K_LEFT]:
+     ➜ Tombol kiri: geser mobil ke kiri.
+081.             pemain_x -= kecepatan_pemain
+     ➜ Seberapa cepat mobil pemain bergerak.
+082.         if keys[pygame.K_RIGHT]:
+     ➜ Tombol kanan: geser mobil ke kanan.
+083.             pemain_x += kecepatan_pemain
+     ➜ Seberapa cepat mobil pemain bergerak.
+084. 
+     ➜ Baris ini bagian dari program.
+085.         # Batasi mobil agar tidak keluar layar
+     ➜ Baris ini bagian dari program.
+086.         if pemain_x < 20:
+     ➜ Jangan keluar jalur kiri.
+087.             pemain_x = 20
+     ➜ Baris ini bagian dari program.
+088.         if pemain_x > LEBAR - lebar_mobil - 20:
+     ➜ Jangan keluar jalur kanan.
+089.             pemain_x = LEBAR - lebar_mobil - 20
+     ➜ Baris ini bagian dari program.
+090. 
+     ➜ Baris ini bagian dari program.
+091.         # 3. Tambahkan musuh baru
+     ➜ Baris ini bagian dari program.
+092.         timer_muncul += 1
+     ➜ Naikkan hitungan waktu untuk muncul musuh.
+093.         if timer_muncul >= jarak_muncul:
+     ➜ Kalau waktunya sudah cukup, buat musuh baru.
+094.             musuh_list.append(buat_musuh())
+     ➜ Masukkan musuh baru ke daftar.
+095.             timer_muncul = 0
+     ➜ Penghitung waktu untuk munculkan musuh.
+096. 
+     ➜ Baris ini bagian dari program.
+097.         # 4. Gerakkan musuh dan cek tabrakan
+     ➜ Baris ini bagian dari program.
+098.         pemain_rect = pygame.Rect(pemain_x, pemain_y, lebar_mobil, tinggi_mobil)
+     ➜ Buat kotak pemain untuk cek tabrakan.
+099.         for musuh in musuh_list:
+     ➜ Ambil semua musuh satu-satu.
+100.             musuh["rect"].y += musuh["speed"]
+     ➜ Gerakkan musuh ke bawah.
+101. 
+     ➜ Baris ini bagian dari program.
+102.             # Cek tabrakan
+     ➜ Baris ini bagian dari program.
+103.             if pemain_rect.colliderect(musuh["rect"]):
+     ➜ Kalau kotak pemain dan musuh ketemu, artinya tabrakan.
+104.                 game_over = True
+     ➜ Baris ini bagian dari program.
+105. 
+     ➜ Baris ini bagian dari program.
+106.         # Hapus musuh yang sudah lewat bawah
+     ➜ Baris ini bagian dari program.
+107.         musuh_list = [m for m in musuh_list if m["rect"].y < TINGGI + 100]
+     ➜ Buang musuh yang sudah lewat layar.
+108. 
+     ➜ Baris ini bagian dari program.
+109.         # 5. Tambah skor
+     ➜ Baris ini bagian dari program.
+110.         skor += 1
+     ➜ Tambah skor setiap frame.
+111. 
+     ➜ Baris ini bagian dari program.
+112.     # 6. Gambar semua ke layar
+     ➜ Baris ini bagian dari program.
+113.     layar.fill(ABU)
+     ➜ Bersihkan layar dan kasih warna abu.
+114. 
+     ➜ Baris ini bagian dari program.
+115.     # Gambar jalan
+     ➜ Baris ini bagian dari program.
+116.     pygame.draw.rect(layar, (100, 100, 100), (20, 0, LEBAR - 40, TINGGI))
+     ➜ Gambar jalan abu gelap di tengah.
+117.     # Garis putih tengah
+     ➜ Baris ini bagian dari program.
+118.     for y in range(0, TINGGI, 40):
+     ➜ Gambar garis putih putus-putus di tengah jalan.
+119.         pygame.draw.rect(layar, PUTIH, (LEBAR // 2 - 5, y, 10, 20))
+     ➜ Baris ini bagian dari program.
+120. 
+     ➜ Baris ini bagian dari program.
+121.     # Gambar mobil pemain
+     ➜ Baris ini bagian dari program.
+122.     pygame.draw.rect(layar, BIRU, (pemain_x, pemain_y, lebar_mobil, tinggi_mobil))
+     ➜ Gambar mobil pemain.
+123. 
+     ➜ Baris ini bagian dari program.
+124.     # Gambar musuh
+     ➜ Baris ini bagian dari program.
+125.     for musuh in musuh_list:
+     ➜ Ambil semua musuh satu-satu.
+126.         pygame.draw.rect(layar, MERAH, musuh["rect"])
+     ➜ Gambar mobil musuh.
+127. 
+     ➜ Baris ini bagian dari program.
+128.     # Tulis skor
+     ➜ Baris ini bagian dari program.
+129.     teks_skor = font.render(f"Skor: {skor}", True, HITAM)
+     ➜ Buat teks skor.
+130.     layar.blit(teks_skor, (10, 10))
+     ➜ Tempel teks skor di layar.
+131. 
+     ➜ Baris ini bagian dari program.
+132.     if game_over:
+     ➜ Kalau game over, cek apakah pemain mau restart.
+133.         teks_go = font.render("TABRAKAN! Tekan R untuk main lagi", True, HITAM)
+     ➜ Buat teks game over.
+134.         layar.blit(teks_go, (60, TINGGI // 2))
+     ➜ Tempel teks game over di layar.
+135. 
+     ➜ Baris ini bagian dari program.
+136.     # 7. Update layar
+     ➜ Baris ini bagian dari program.
+137.     pygame.display.flip()
+     ➜ Tampilkan gambar terbaru ke jendela.
+138. 
+     ➜ Baris ini bagian dari program.
+139. # Keluar pygame
+     ➜ Baris ini bagian dari program.
+140. pygame.quit()
+     ➜ Tutup pygame dan selesai.
